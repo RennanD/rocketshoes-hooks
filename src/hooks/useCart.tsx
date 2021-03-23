@@ -97,8 +97,10 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     try {
       const findedProduct = cart.some(product => product.id === productId )
 
+      console.log(findedProduct)
+
       if(!findedProduct) {
-        throw new Error('Produto não encontrado')
+        throw new Error('Erro na alteração de quantidade do produto')
       }
 
       if(amount <= 0) {
