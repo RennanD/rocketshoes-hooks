@@ -53,23 +53,23 @@ const Home = (): JSX.Element => {
   return (
     <ProductList>
       {products.map(product => (
-        <li>
-        <img src={product.image} alt="Tênis de Caminhada Leve Confortável" />
-        <strong>{product.title}</strong>
-        <span>{product.priceFormatted}</span>
-        <button
-          type="button"
-          data-testid="add-product-button"
-          onClick={() => handleAddProduct(product.id)}
-        >
-          <div data-testid="cart-product-quantity">
-            <MdAddShoppingCart size={16} color="#FFF" />
-            {cartItemsAmount[product.id] || 0}
-          </div>
+        <li key={product.id}>
+          <img src={product.image} alt="Tênis de Caminhada Leve Confortável" />
+          <strong>{product.title}</strong>
+          <span>{product.priceFormatted}</span>
+          <button
+            type="button"
+            data-testid="add-product-button"
+            onClick={() => handleAddProduct(product.id)}
+          >
+            <div data-testid="cart-product-quantity">
+              <MdAddShoppingCart size={16} color="#FFF" />
+              {cartItemsAmount[product.id] || 0}
+            </div>
 
-          <span>ADICIONAR AO CARRINHO</span>
-        </button>
-      </li>
+            <span>ADICIONAR AO CARRINHO</span>
+          </button>
+        </li>
       ))}
     </ProductList>
   );

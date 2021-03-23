@@ -46,15 +46,22 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
         throw new Error()
       }
 
+      
       if(existentProduct) {
         updateProductAmount({ productId: existentProduct.id, amount })
       } else {
         const { data } = await api.get(`/products/${productId}`);
-        setCart([ ...cart, data.product ])
+        setCart([ ...cart, {
+         ...data,
+         amount: 1 
+        }])
 
         localStorage.setItem(
           '@RocketShoes:cart', 
-          JSON.stringify([...cart, data.product])
+          JSON.stringify([...cart, {
+            ...data,
+            amount: 1 
+           }])
         );
       }
 
@@ -64,14 +71,12 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
   };
 
   const removeProduct = (productId: number) => {
-
-    const findedProduct = cart.some(product => product.id === productId )
-
-    if(!findedProduct) {
-      throw new Error()
-    }
-
     try {
+      const findedProduct = cart.some(product => product.id === productId )
+
+      if(!findedProduct) {
+        throw new Error()
+      }
       const filterProducts = cart.filter(product => product.id !== productId)
     
       setCart(filterProducts)
@@ -90,13 +95,21 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     amount,
   }: UpdateProductAmount) => {
     try {
-      if(amount <= 0) return
+      const findedProduct = cart.some(product => product.id === productId )
+
+      if(!findedProduct) {
+        throw new Error('Produto não encontrado')
+      }
+
+      if(amount <= 0) {
+        throw new Error();
+      }
       const response = await api.get(`/stock/${productId}`)
 
-      const { stock } = response.data
+      const stock: Stock = response.data
 
-      if(amount > stock) {
-        throw new Error()
+      if(amount > stock.amount) {
+        throw new Error('Quantidade solicitada fora de estoque')
       }
 
       const updatedCart = cart.map(product => {
@@ -113,8 +126,8 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
         '@RocketShoes:cart', 
         JSON.stringify(updatedCart)
       )
-    } catch {
-      toast.error('Quantidade solicitada fora de estoque')
+    } catch (err) {
+      toast.error(err.message)
     }
   };
 
